@@ -10,7 +10,7 @@ RUN if [ ! -z "$TRUST_CERT" ]; then \
     fi
 
 # Normalize apt sources
-# ADD sources.list /etc/apt/sources.list
+ADD sources.list /etc/apt/sources.list
 # RUN cat /etc/apt/sources.list | grep -v '^#' | sed /^$/d | sort | uniq > sources.tmp.1 && \
 #     cat /etc/apt/sources.list | sed s/deb\ /deb-src\ /g | grep -v '^#' | sed /^$/d | sort | uniq > sources.tmp.2 && \
 #     cat sources.tmp.1 sources.tmp.2 > /etc/apt/sources.list && \

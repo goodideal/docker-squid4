@@ -1,6 +1,6 @@
 ARG DOCKER_PREFIX=
 
-FROM ${DOCKER_PREFIX}ubuntu:artful
+FROM ${DOCKER_PREFIX}ubuntu:18.04
 
 ARG TRUST_CERT=
 
@@ -10,16 +10,17 @@ RUN if [ ! -z "$TRUST_CERT" ]; then \
     fi
 
 # Normalize apt sources
-RUN cat /etc/apt/sources.list | grep -v '^#' | sed /^$/d | sort | uniq > sources.tmp.1 && \
-    cat /etc/apt/sources.list | sed s/deb\ /deb-src\ /g | grep -v '^#' | sed /^$/d | sort | uniq > sources.tmp.2 && \
-    cat sources.tmp.1 sources.tmp.2 > /etc/apt/sources.list && \
-    rm -f sources.tmp.1 sources.tmp.2
+# ADD sources.list /etc/apt/sources.list
+# RUN cat /etc/apt/sources.list | grep -v '^#' | sed /^$/d | sort | uniq > sources.tmp.1 && \
+#     cat /etc/apt/sources.list | sed s/deb\ /deb-src\ /g | grep -v '^#' | sed /^$/d | sort | uniq > sources.tmp.2 && \
+#     cat sources.tmp.1 sources.tmp.2 > /etc/apt/sources.list && \
+#     rm -f sources.tmp.1 sources.tmp.2
 
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get build-dep -y squid && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y wget tar xz-utils libssl-dev
 
-ARG SQUID_VERSION=4.0.21
+ARG SQUID_VERSION=4.8
 
 # TODO: verify the squid download with the signing key
 RUN mkdir /src \
@@ -119,3 +120,6 @@ ENV HTTP_PORT=3128 \
 EXPOSE 3128
 
 ENTRYPOINT [ "/squid.bsh" ]
+
+# clear
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* 
